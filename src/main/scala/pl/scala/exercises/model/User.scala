@@ -17,15 +17,7 @@ object User {
     *
     * Modify function to work as implicit conversion.
     */
-  implicit def fromEmployee(e: Employee): User =
-    e match {
-      case TopLevelManager(e) => Admin(e.email)
-      case e => e.getActiveDepartment match {
-          case Some(d) => RegularUser(e.email, d.id)
-          case None => Guest(e.email)
-        }
-
-    }
+  implicit def fromEmployee(e: Employee): User = ???
 
 }
 
@@ -40,11 +32,7 @@ case class RegularUser(override val username: String, departmentId: Int) extends
     * Implement function that checks whether employee can access resource.
     * RegularUser can access all resources that are not secret and all resources from its department
     */
-  override def canAccessResource(resource: CompanyResource): Boolean = resource match {
-    case CompanyResource(_, _, false) => true
-    case CompanyResource(_, `departmentId`, _) => true
-    case _ => false
-  }
+  override def canAccessResource(resource: CompanyResource): Boolean = ???
 }
 
 case class Guest(override val username: String) extends User {

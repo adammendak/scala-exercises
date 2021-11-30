@@ -14,17 +14,13 @@ final class Exercises(actions: Actions) {
     * TODO Ex1
     * Implement function for getting emails of all employees.
     */
-  def employeesEmails: List[String] = CompanyRepository
-    .employees
-    .map(_.email)
+  def employeesEmails: List[String] = ???
 
   /**
     * TODO Ex3
     * Implement function for getting tuples of full name and email of all employees. Use method fullName from Employee class.
     */
-  def employeesNamesWithEmails: List[(String, String)] = CompanyRepository
-    .employees
-    .map(e => (e.fullName, e.email))
+  def employeesNamesWithEmails: List[(String, String)] = ???
 
   /**
     * TODO Ex4
@@ -32,16 +28,13 @@ final class Exercises(actions: Actions) {
     *
     * HINT: use flatMap or flatten
     */
-  def getAllPhones: List[(String, String)] = CompanyRepository.employees
-    .flatMap(e => e.phones.map(p => (e.fullName, p)))
+  def getAllPhones: List[(String, String)] = ???
 
   /**
     * TODO Ex5
     * Return list of string containing first and last name of employee sorted alphabetically by the last name.
     */
-  def sortedEmployeesNames: List[String] = CompanyRepository.employees
-    .sortBy(_.lastName)
-    .map(_.fullName)
+  def sortedEmployeesNames: List[String] = ???
 
   /**
     * TODO Ex6
@@ -52,9 +45,7 @@ final class Exercises(actions: Actions) {
     *
     * HINT: Use zipWithIndex and mkString
     */
-  def listOfEmployeesNames: String = sortedEmployeesNames.zip(LazyList.from(1)).map {
-    case (name, idx) => s"$idx. $name"
-  }.mkString("\n")
+  def listOfEmployeesNames: String = ???
 
   /**
     * TODO Ex7
@@ -65,19 +56,14 @@ final class Exercises(actions: Actions) {
     *
     * HINT: Use range, zip and mkString
     */
-  def listOfEmployeesNamesWithLetters: String = sortedEmployeesNames.zip('A' to 'Z').map {
-    case (name, letter) => s"$letter. $name"
-  }.mkString("\n")
+  def listOfEmployeesNamesWithLetters: String = ???
 
   /**
     * TODO Ex8b
     * Implement function to get maximum and minimum value of salary and return it as an option of tuple (minimum, maximum).
     * Return None is passed list is empty
     */
-  def minAndMaxSalary(employees: List[Employee]): Option[(Salary, Salary)] = {
-    val sorted = employees.map(_.salary).sorted
-    sorted.headOption.flatMap(best => sorted.lastOption.map(worst => (best, worst)))
-  }
+  def minAndMaxSalary(employees: List[Employee]): Option[(Salary, Salary)] = ???
 
   /**
     * TODO Ex9
@@ -96,37 +82,26 @@ final class Exercises(actions: Actions) {
     * TODO Ex11
     * Implement function to two first best earning employees return it as an option of tuple (minimum, maximum).
     */
-  def twoBestEarningEmployees: Option[(Employee, Employee)] = {
-    val sorted = CompanyRepository.employees.sortBy(_.salary).takeRight(2)
-    sorted match {
-      case second :: first :: _ => Some(first, second)
-      case _ => None
-    }
-  }
+  def twoBestEarningEmployees: Option[(Employee, Employee)] = ???
 
   /**
     * TODO Ex13
     * Return list of employees that are active today.
     */
-  def getAllActiveEmployees: List[Employee] = CompanyRepository.employees
-    .filter(_.isActiveAt(LocalDate.now()))
+  def getAllActiveEmployees: List[Employee] = ???
 
   /**
     * TODO Ex16
     * Implement function for getting tuples of employees email and employee instance by domain passed as argument.
     */
-  def findUsersByDomain(domain: String): List[(String, Employee)] = CompanyRepository.employees.collect {
-    case employee @ EmailDomain(`domain`, email) => (email, employee)
-  }
+  def findUsersByDomain(domain: String): List[(String, Employee)] = ???
 
   /**
     * TODO Ex17b
     * Implement function that return sum of salaries of all top level managers
     */
 
-  def getSumOfTopLevelManagersSalaries(): Int = CompanyRepository.employees.collect {
-    case TopLevelManager(e) => e.salary.value
-  }.sum
+  def getSumOfTopLevelManagersSalaries(): Int = ???
 
   /**
     * TODO Ex18
@@ -135,9 +110,7 @@ final class Exercises(actions: Actions) {
     * HINT: Use foreach
     */
 
-  def sendMailToAllEmployeesOfDepartment(departmentId: Int, message: String): Unit = CompanyRepository.employees
-    .filter(_.getActiveDepartment.exists(d => d.id == departmentId))
-    .foreach(e => actions.sendMail(e.email, message))
+  def sendMailToAllEmployeesOfDepartment(departmentId: Int, message: String): Unit = ???
 
   /**
     * TODO Ex19
@@ -148,16 +121,7 @@ final class Exercises(actions: Actions) {
     *
     *  HINT: Use foldLeft
     */
-  def splitEmployees: (List[Employee], List[Employee], List[Employee]) = CompanyRepository
-    .employees
-    .foldLeft((List.empty[Employee], List.empty[Employee], List.empty[Employee])) {
-      case ((accounting, engineering, security), employee) =>
-        employee match {
-          case e if e.phones.size > 1 => (accounting :+ employee, engineering, security)
-          case e if e.employmentHistory.size > 1 => (accounting, engineering :+ employee, security)
-          case _ => (accounting, engineering, security :+ employee)
-        }
-    }
+  def splitEmployees: (List[Employee], List[Employee], List[Employee]) = ???
 
   /**
     * TODO Ex20
@@ -165,10 +129,7 @@ final class Exercises(actions: Actions) {
     * if employee has office.
     * HINT: use flatMap
     */
-  def getOfficeOfEmployee(e: Employee): Option[String] = for {
-    l <- e.location
-    o <- l.office
-  } yield o
+  def getOfficeOfEmployee(e: Employee): Option[String] = ???
 
   /**
     * TODO Ex22
@@ -188,32 +149,26 @@ final class Exercises(actions: Actions) {
     * TODO Ex21
     * Implement ordering for localData
     */
-  implicit val ordering: Ordering[LocalDate] = Ordering.by(_.toEpochDay)
+  implicit val ordering: Ordering[LocalDate] = ???
 
   /**
     * TODO Ex24
     * Return list of sorted employees from latest hired. If employee has no employment period they should go last.
     */
-  def sortedEmployeesFromNewest: List[Employee] = CompanyRepository.employees
-    .sortBy(_.employmentHistory.map(_.from).sorted.headOption).reverse
+  def sortedEmployeesFromNewest: List[Employee] = ???
 
   /**
     * TODO Ex25
     * Implement function taking salary as argument and returning tuple of two lists:
     * all employees below given salary and all employees above.
     */
-  def aboveAndBelowSalary(s: Int): (List[Employee], List[Employee]) = CompanyRepository.employees
-    .partition(_.salary.value < s)
+  def aboveAndBelowSalary(s: Int): (List[Employee], List[Employee]) = ???
 
   /**
     * TODO Ex26
     * Implement function that returns the sum of the days employee was employed across all periods for today.
     */
-  def employmentDays(employee: Employee): Long =
-    employee.employmentHistory.map {
-      case EmploymentPeriod(from, to, _) =>
-        to.getOrElse(LocalDate.now()).toEpochDay - from.toEpochDay
-    }.sum
+  def employmentDays(employee: Employee): Long = ???
 
   /**
     * TODO Ex27
@@ -221,55 +176,33 @@ final class Exercises(actions: Actions) {
     * HINT: use method view on map.
     */
 
-  def employeesByDepartment: Map[Department, List[Employee]] = {
-    CompanyRepository.employees
-      .groupBy(_.getActiveDepartment)
-      .view
-      .collect {
-        case (Some(department), employees) => department -> employees
-      }.toMap
-  }
+  def employeesByDepartment: Map[Department, List[Employee]] = ???
 
   /**
     * TODO Ex28
     * Calculate average salary per department. Reuse method employeesByDepartment.
     * HINT: use method view on map.
     */
-  def salariesByDepartment: Map[Department, Int] = employeesByDepartment
-    .view
-    .mapValues(s => s.map(_.salary.value).sum / s.size)
-    .toMap
+  def salariesByDepartment: Map[Department, Int] = ???
 
   /**
     * TODO Ex31
     * Get all available resources for user. Use method canAccessResource from user.
     */
-  def getAllAvailableResources(user: User): List[CompanyResource] =
-    CompanyRepository.resources.filter(user.canAccessResource)
+  def getAllAvailableResources(user: User): List[CompanyResource] = ???
 
   /**
     * TODO Ex33
     * Get all available resources for employee. Reuse method getAllAvailableResources.
     */
-  def getAllAvailableResourcesForEmployee(employee: Employee): List[CompanyResource] =
-    getAllAvailableResources(User.fromEmployee(employee))
+  def getAllAvailableResourcesForEmployee(employee: Employee): List[CompanyResource] = ???
 
   /**
     * TODO Ex34
     * Return the highest ranking supervisor of employee (manager of manager of manager ..., etc.). If employee has no manager, just return that employee.
     * Try to make method tail-recursive.
     */
-  @tailrec
-  def getHighestRankingSuperior(employee: Employee): Option[Employee] = {
-    employee.managerId match {
-      case Some(id) =>
-        CompanyRepository.employees.find(_.id == id) match {
-          case Some(supervisor) => getHighestRankingSuperior(supervisor)
-          case None => None
-        }
-      case None => Some(employee)
-    }
-  }
+  def getHighestRankingSuperior(employee: Employee): Option[Employee] = ???
 
   /**
     * TODO Ex37
@@ -280,11 +213,7 @@ final class Exercises(actions: Actions) {
     */
   def moveEmployeeToDepartment(employee: Employee, department: Department)(
       implicit ec: ExecutionContext
-  ): Future[Unit] = for {
-    withClosedLastPeriod <- Future.fromTry(employee.endLastEmploymentPeriod(LocalDate.now()))
-    withNewPeriod <- Future.fromTry(withClosedLastPeriod.withNewEmploymentPeriod(LocalDate.now(), department))
-    _ <- actions.updateEmployees(List(withNewPeriod))
-  } yield ()
+  ): Future[Unit] = ???
 
   /**
     * TODO Ex38
@@ -295,12 +224,6 @@ final class Exercises(actions: Actions) {
     */
   def giveEmployeesRaise(employees: List[Employee])(
       implicit ec: ExecutionContext
-  ): Future[Unit] = for {
-    updatedSalaries <- Future.sequence(employees.map(e => actions.calculateRaise(e.id)))
-    updatedEmployees = employees.zip(updatedSalaries).map {
-      case (e, s) => e.copy(salary = s)
-    }
-    _ <- actions.updateEmployees(updatedEmployees)
-  } yield ()
+  ): Future[Unit] = ???
 
 }

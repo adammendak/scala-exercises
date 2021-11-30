@@ -30,7 +30,7 @@ object CompanyRepository {
       ),
       phones = Nil,
       managerId = Some(6),
-      salary = 3000 USD
+      salary = Salary(3000, "USD")
     ),
     Employee(
       id = 2,
@@ -56,7 +56,7 @@ object CompanyRepository {
       ),
       phones = List("444", "555234123"),
       managerId = Some(1),
-      salary = 3000 USD
+      salary = Salary(3000, "USD")
     ),
     Employee(
       id = 3,
@@ -72,7 +72,7 @@ object CompanyRepository {
       ),
       phones = List("421", "785123123", "444333123"),
       managerId = Some(5),
-      salary = 3500 USD
+      salary = Salary(3500, "USD")
     ),
     Employee(
       id = 4,
@@ -87,7 +87,7 @@ object CompanyRepository {
         )
       ),
       phones = List("342", "111222333"),
-      salary = 5000 USD
+      salary = Salary(5000, "USD")
     ),
     Employee(
       id = 4,
@@ -96,7 +96,7 @@ object CompanyRepository {
       email = "ann.smith@external.com",
       employmentHistory = Vector.empty,
       phones = List("342", "111222333"),
-      salary = 7000 USD
+      salary = Salary(7000, "USD")
     ),
     Employee(
       id = 5,
@@ -111,7 +111,7 @@ object CompanyRepository {
         )
       ),
       phones = List("942"),
-      salary = 9000 USD
+      salary = Salary(9000, "USD")
     ),
     Employee(
       id = 6,
@@ -127,7 +127,7 @@ object CompanyRepository {
       ),
       phones = List("884343123"),
       managerId = Some(7),
-      salary = 4000 USD
+      salary = Salary(4000, "USD")
     ),
     Employee(
       id = 7,
@@ -142,7 +142,7 @@ object CompanyRepository {
         )
       ),
       phones = List("884343123"),
-      salary = 9100 USD
+      salary = Salary(9100, "USD")
     )
   )
 

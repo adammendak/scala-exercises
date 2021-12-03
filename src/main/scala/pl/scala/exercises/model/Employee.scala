@@ -1,5 +1,7 @@
 package pl.scala.exercises.model
 
+import pl.scala.exercises.CompanyRepository
+
 import java.time.LocalDate
 import scala.language.postfixOps
 import scala.util.Try
@@ -42,7 +44,27 @@ case class Employee(
     * TODO Ex12
     * Implement function that returns true, if employee has employment period for given day.
     */
-  def isActiveAt(day: LocalDate): Boolean = ???
+  def isActiveAt(day: LocalDate): Boolean =
+//    employmentHistory.exists{
+//      case EmploymentPeriod(from, maybeTo, _ ) =>
+//        (from.isBefore(day)|| from.isEqual(day)) &&
+//          maybeTo.map(to => to.isEqual(day) || to.isAfter(day)).getOrElse(true)
+//    }     PIERWSZY SPOSOB
+
+    employmentHistory.exists{
+      case EmploymentPeriod(from, Some(to), _ ) =>
+        (from.isBefore(day)|| from.isEqual(day)) &&
+          to.isEqual(day) || to.isAfter(day)
+      case EmploymentPeriod(from, None, _) =>
+        from.isBefore(day) || from.isEqual(day)
+    }
+
+//    employmentHistory.forall{
+//      case EmploymentPeriod(from, Some(to), _) =>
+//        day.isEqual(from) || (day.isAfter(from) && to.isBefore(day))
+//      case EmploymentPeriod(from, None, _) =>
+//        day.isAfter(from)
+
 
   /**
     * TODO Ex14
@@ -80,10 +102,18 @@ object Employee {
 
   /**
     * TODO Ex10
-    * Implement apply method that returns instance of Either[Employee]. In case managerId is equal to employee's id return Left
+    * Implement apply method that returns instance of Either[String, Employee]. In case managerId is equal to employee's id return Left
     * with string "Manager id should be different that employee's id". Use InitialSalary for salary. Use method createEmail to create email
     */
-  def apply(id: Int, firstName: String, lastName: String, phone: String, managerId: Option[Int]): Either[String, Employee] = ???
+  def apply(id: Int, firstName: String, lastName: String, phone: String, managerId: Option[Int]): Either[String, Employee] = {
+    def createEmail = s"$firstName.$lastName@$CompanyDomain"
+
+    if (managerId.contains(id)) {
+      Left("Manager id should be different that employee's id")
+    } else {
+      Right(new Employee(id, firstName, lastName, createEmail, Vector.empty, List(phone), InitialSalary, managerId = managerId, location = None))
+    }
+  }
 }
 
 /**

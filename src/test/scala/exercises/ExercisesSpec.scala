@@ -141,6 +141,7 @@ class ExercisesSpec extends AnyFlatSpec with MockFactory with Matchers with Insi
   it should "allow creating new instances of Employee - Ex10" in new Fixture {
 
     Employee(1, "Bill", "Hunter", "5552", None).isRight shouldBe true
+    Employee(1, "Bill", "Hunter", "5552", Some(1)) shouldBe Left("Manager id should be different that employee's id")
 
   }
 

@@ -142,14 +142,16 @@ final class Exercises(actions: Actions) {
     * TODO Ex11
     * Implement function to two first best earning employees return it as an option of tuple (minimum, maximum).
     */
-  def twoBestEarningEmployees: Option[(Employee, Employee)] = CompanyRepository
-    .employees
+  def twoBestEarningEmployees: Option[(Employee, Employee)] = ???
 
   /**
     * TODO Ex13
     * Return list of employees that are active today.
     */
-  def getAllActiveEmployees: List[Employee] = ???
+  def getAllActiveEmployees: List[Employee] =
+    CompanyRepository
+      .employees
+      .filter(_.isActiveAt(LocalDate.now()))
 
   /**
     * TODO Ex16

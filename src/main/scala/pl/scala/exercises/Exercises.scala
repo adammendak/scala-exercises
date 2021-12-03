@@ -14,13 +14,17 @@ final class Exercises(actions: Actions) {
     * TODO Ex1
     * Implement function for getting emails of all employees.
     */
-  def employeesEmails: List[String] = ???
+  def employeesEmails: List[String] = CompanyRepository
+      .employees
+      .map(x=> x.email)
 
   /**
     * TODO Ex3
     * Implement function for getting tuples of full name and email of all employees. Use method fullName from Employee class.
     */
-  def employeesNamesWithEmails: List[(String, String)] = ???
+  def employeesNamesWithEmails: List[(String, String)] = CompanyRepository
+    .employees
+    .map(e => (e.fullName, e.email))
 
   /**
     * TODO Ex4
@@ -28,13 +32,19 @@ final class Exercises(actions: Actions) {
     *
     * HINT: use flatMap or flatten
     */
-  def getAllPhones: List[(String, String)] = ???
+  def getAllPhones: List[(String, String)] = CompanyRepository
+    .employees
+    .map(e => e.phones.map((e.fullName, _)))
+    .flatten // _ to jest pierwszy argument wiec mozna go przekazac przez _ po prostu
 
   /**
     * TODO Ex5
     * Return list of string containing first and last name of employee sorted alphabetically by the last name.
     */
-  def sortedEmployeesNames: List[String] = ???
+  def sortedEmployeesNames: List[String] = CompanyRepository
+    .employees
+    .sortBy(_.lastName)     //moze byc sortWith
+    .map(_.fullName)
 
   /**
     * TODO Ex6
@@ -45,7 +55,24 @@ final class Exercises(actions: Actions) {
     *
     * HINT: Use zipWithIndex and mkString
     */
-  def listOfEmployeesNames: String = ???
+  def listOfEmployeesNames: String =
+    CompanyRepository
+      .employees
+      .sortBy(_.lastName)
+      .zip(LazyList.from(1))
+//      .map{
+//        case (emp, idx) =>
+//          s"$idx. ${emp.fullName}"
+//      }
+//      .map(e => {
+//        s"${e._2}. ${e._1.fullName} "
+//      })        //mozna od razu nawiasy klamrowe tez jak na dole dac
+      .map{e =>
+        s"${e._2}. ${e._1.fullName}"
+      }
+      .mkString("\n")
+
+
 
   /**
     * TODO Ex7
@@ -56,14 +83,39 @@ final class Exercises(actions: Actions) {
     *
     * HINT: Use range, zip and mkString
     */
-  def listOfEmployeesNamesWithLetters: String = ???
+  def listOfEmployeesNamesWithLetters: String = CompanyRepository
+    .employees
+    .sortBy(_.lastName)
+    .zip('A' to 'Z')
+    .map{e =>
+      s"${e._2}. ${e._1.fullName}"
+    }
+    .mkString("\n")
 
   /**
     * TODO Ex8b
     * Implement function to get maximum and minimum value of salary and return it as an option of tuple (minimum, maximum).
     * Return None is passed list is empty
     */
-  def minAndMaxSalary(employees: List[Employee]): Option[(Salary, Salary)] = ???
+  def minAndMaxSalary(employees: List[Employee]): Option[(Salary, Salary)] = {
+    val sorted = employees.map(_.salary).sortBy(_.value)
+
+//    sorted match {
+//      case List() => None
+//      case l => Some(l.head, l.last)
+//    }       TO PIERWSZE ROZWIAZANIE
+
+    val maybeHead = sorted.headOption
+    val maybeLast = sorted.lastOption
+//    (maybeHead, maybeLast) match {
+//      case (Some(h), Some(l)) => Some((h,l))
+//      case _ => None
+//    }       DRUGIE ROZWIAZANIE
+
+    maybeHead.flatMap(h => maybeLast.map(l => (h,l)))
+
+  }
+
 
   /**
     * TODO Ex9
@@ -71,18 +123,27 @@ final class Exercises(actions: Actions) {
     */
   def modifySalaries(salaries: List[Salary], modifier1: Double, modifier2: Double): List[Salary] = {
 
-    def modify(v: Double)(salary: Salary): Salary = salary.copy(value = (salary.value * v).toInt)
+//    def modify(v: Double)(salary: Salary): Salary = salary.copy(value = (salary.value * v).toInt)
+//    val sorted = salaries.sorted
+//    sorted.dropRight(2).map(modify(modifier2)) ++ sorted.takeRight(2).map(modify(modifier1))
 
+//    val sorted = salaries.sorted
+//    val result = sorted.dropRight(2).map(_.value * modifier1)
+//    val result2 = sorted.takeRight(2).map(_.value * modifier2)
+//    List(result, result2).flatten
+
+    def modify(v: Double)(salary: Salary): Salary = salary.copy(value = (v * salary.value).toInt)
     val sorted = salaries.sorted
 
-    sorted.dropRight(2).map(modify(modifier2)) ++ sorted.takeRight(2).map(modify(modifier1))
+    sorted.take(2).map(s => modify(modifier1)(s)) ++ sorted.drop(2).map(modify(modifier2))
   }
 
   /**
     * TODO Ex11
     * Implement function to two first best earning employees return it as an option of tuple (minimum, maximum).
     */
-  def twoBestEarningEmployees: Option[(Employee, Employee)] = ???
+  def twoBestEarningEmployees: Option[(Employee, Employee)] = CompanyRepository
+    .employees
 
   /**
     * TODO Ex13
@@ -149,7 +210,7 @@ final class Exercises(actions: Actions) {
     * TODO Ex21
     * Implement ordering for localData
     */
-  implicit val ordering: Ordering[LocalDate] = ???
+  implicit val ordering: Ordering[LocalDate] = Ordering.by(_.toEpochDay)
 
   /**
     * TODO Ex24

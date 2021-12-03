@@ -35,7 +35,8 @@ case class Employee(
     * TODO Ex2
     * Implement value returning fullName of employee (firstName + lastName)
     */
-  val fullName: String = ???
+//  val fullName: String = this.firstName + " " + this.lastName
+  val fullName: String = s"$firstName $lastName"
 
   /**
     * TODO Ex12

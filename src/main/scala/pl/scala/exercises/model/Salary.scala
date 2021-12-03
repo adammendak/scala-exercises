@@ -8,7 +8,7 @@ object Salary {
     * TODO Ex8a
     * Implement ordering for Salary
     */
-  implicit val ordering: Ordering[Salary] = ???
+  implicit val ordering: Ordering[Salary] = Ordering.by(_.value)
 
   /**
     * TODO Ex39

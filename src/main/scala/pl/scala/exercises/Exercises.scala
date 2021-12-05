@@ -9,7 +9,6 @@ import scala.concurrent.Future
 import scala.language.postfixOps
 
 final class Exercises(actions: Actions) {
-
   /**
     * TODO Ex1
     * Implement function for getting emails of all employees.
@@ -157,14 +156,29 @@ final class Exercises(actions: Actions) {
     * TODO Ex16
     * Implement function for getting tuples of employees email and employee instance by domain passed as argument.
     */
-  def findUsersByDomain(domain: String): List[(String, Employee)] = ???
+  def findUsersByDomain(domain: String): List[(String, Employee)] =
+    CompanyRepository
+      .employees
+//      .flatMap {
+//        case employee @ EmailDomain(`domain`, email) => Some((email, employee)) // ta @ lapie caly kontekst w pattern matchingu
+//        case _ => None
+//      }
+      .collect{
+        case employee @ EmailDomain(`domain`, email) => (email, employee)       //collect robi od razu filter i map wiec mniej kodu
+      }
 
   /**
     * TODO Ex17b
     * Implement function that return sum of salaries of all top level managers
     */
 
-  def getSumOfTopLevelManagersSalaries(): Int = ???
+  def getSumOfTopLevelManagersSalaries(): Int = {
+    CompanyRepository
+      .employees
+      .collect{
+        case TopLevelManager(e) => e.salary.value
+      }.sum
+  }
 
   /**
     * TODO Ex18
@@ -173,7 +187,17 @@ final class Exercises(actions: Actions) {
     * HINT: Use foreach
     */
 
-  def sendMailToAllEmployeesOfDepartment(departmentId: Int, message: String): Unit = ???
+  def sendMailToAllEmployeesOfDepartment(departmentId: Int, message: String): Unit = {
+    CompanyRepository
+      .employees
+      .filter(_.getActiveDepartment.exists(_.id == departmentId))
+      .foreach(e => actions.sendMail(e.email, "hello"))
+//
+//    CompanyRepository.employees.collect{
+//      case e if e.getActiveDepartment.exists(_.id == departmentId) => e.email
+//    }.foreach(actions.sendMail(_, message))     DRUGI SPOSOB
+  }
+
 
   /**
     * TODO Ex19
@@ -184,7 +208,22 @@ final class Exercises(actions: Actions) {
     *
     *  HINT: Use foldLeft
     */
-  def splitEmployees: (List[Employee], List[Employee], List[Employee]) = ???
+  def splitEmployees: (List[Employee], List[Employee], List[Employee]) = {
+    CompanyRepository
+      .employees
+      .foldLeft((
+        List.empty[Employee],
+        List.empty[Employee],
+        List.empty[Employee]
+      )) {
+        case ((moreThan1Phone, modeThan1EmpPeriod, rest), employee) =>
+          employee match {
+            case e if e.phones.size > 1 => (moreThan1Phone :+ e, modeThan1EmpPeriod, rest)
+            case e if e.employmentHistory.size > 1 => (moreThan1Phone, modeThan1EmpPeriod :+ e, rest)
+            case e => (moreThan1Phone, modeThan1EmpPeriod, rest :+ e)
+          }
+      }
+  }
 
   /**
     * TODO Ex20
@@ -192,7 +231,18 @@ final class Exercises(actions: Actions) {
     * if employee has office.
     * HINT: use flatMap
     */
-  def getOfficeOfEmployee(e: Employee): Option[String] = ???
+  def getOfficeOfEmployee(e: Employee): Option[String] =
+//    e.location
+//      .flatMap(l =>
+//        l.office.map(
+//          o => s"${l.building}:$o"
+//      ))    to jest na flatmapie, a mozna zrobic na for-comprehension jak na dole
+
+  for {
+    location <- e.location
+    office <- location.office
+  } yield s"${location.building}:$office"
+
 
   /**
     * TODO Ex22
@@ -203,10 +253,20 @@ final class Exercises(actions: Actions) {
     * (Rick,Brooke), (Rick,Terry), (Brooke,Rick), (Brooke,Terry), (Terry,Rick), (Terry,Brooke)
     * HINT: use flatMap
     */
-  def getPairsOfEmployees(employeeNames: List[String]): List[(String, String)] = for {
+  def getPairsOfEmployees(employeeNames: List[String]): List[(String, String)] =
+    for {
     e1 <- employeeNames
     e2 <- employeeNames if e1 != e2
-  } yield (e1, e2)
+  } yield (e1, e2)      //for-comprehension
+
+//  employeeNames.flatMap(left =>
+//  employeeNames.flatMap(right => {
+//    if (left != right) {
+//      List((left, right))
+//    } else {
+//      Nil
+//    }
+//  }))
 
   /**
     * TODO Ex21
@@ -265,7 +325,15 @@ final class Exercises(actions: Actions) {
     * Return the highest ranking supervisor of employee (manager of manager of manager ..., etc.). If employee has no manager, just return that employee.
     * Try to make method tail-recursive.
     */
-  def getHighestRankingSuperior(employee: Employee): Option[Employee] = ???
+  @tailrec
+  def getHighestRankingSuperior(employee: Employee): Option[Employee] =
+    employee.managerId match {
+      case Some(managerId) => CompanyRepository.employees.find(_.id == managerId) match {
+        case Some(manager) => getHighestRankingSuperior(manager)
+        case _ => None
+      }
+      case None => Some(employee)
+    }
 
   /**
     * TODO Ex37

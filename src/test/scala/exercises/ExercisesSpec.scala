@@ -296,7 +296,7 @@ class ExercisesSpec extends AnyFlatSpec with MockFactory with Matchers with Insi
       Some(Location("1", Some("42")))
     )
 
-    exercises.getOfficeOfEmployee(e) shouldBe Some("42")
+    exercises.getOfficeOfEmployee(e) shouldBe Some("1:42")
 
   }
 

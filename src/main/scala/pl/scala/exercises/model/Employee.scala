@@ -70,7 +70,28 @@ case class Employee(
     * TODO Ex14
     * Implement function returning current active department for employee.
     */
-  def getActiveDepartment: Option[Department] = ???
+  def getActiveDepartment: Option[Department] = {
+//    val depId : Int = employmentHistory.filter(x => x.from.isBefore(LocalDate.now()) || x.from.isEqual(LocalDate.now())).last.departmentId
+//    Some(CompanyRepository.departments.filter(_.id == depId))     PIERWSZA OPCJA NIE DO KONCA
+
+//    if (isActiveAt(LocalDate.now())) {
+//      val depId = employmentHistory.sortBy(_.from).last.departmentId
+//      CompanyRepository.departments.find(_.id == depId)
+//    } else {
+//      None
+//    }   DRUGA OPCJA
+
+    val day = LocalDate.now();
+    val maybeActivePeriod = employmentHistory.find{
+      case EmploymentPeriod(from, Some(to), departmentId) =>
+        (from.isBefore(day) || from.isEqual(day)) &&
+          (to.isEqual(day) || to.isAfter(day))
+      case EmploymentPeriod(from, None, _) =>
+        from.isBefore(day) || from.isEqual(day)
+    }
+
+    maybeActivePeriod.flatMap(ep => CompanyRepository.departments.find(_.id == ep.departmentId))
+  }
 
   /**
     * TODO Ex35
@@ -122,7 +143,11 @@ object Employee {
   */
 object EmailDomain {
 
-  def unapply(employee: Employee): Option[(String, String)] = ???
+  def unapply(employee: Employee): Option[(String, String)] =
+    employee.email.split('@') match {
+      case Array(_, domain) => Some((domain, employee.email))
+      case _ => None
+    }
 }
 
 /**
@@ -130,5 +155,11 @@ object EmailDomain {
   * Implement unapply function that matches only top-level managers (with empty managerId).
   */
 object TopLevelManager {
-  def unapply(e: Employee): Option[Employee] = ???
+  def unapply(e: Employee): Option[Employee] =
+//    e.managerId.fold(Option(e))(_ => None)      pierwsze rozwiazanie
+//  if(e.managerId.isEmpty) Some(e) else None     ten fold robi to samo co ten if
+  e.managerId match {
+    case Some(_) => None
+    case None => Some(e)
+  }
 }
